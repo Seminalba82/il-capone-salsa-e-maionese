@@ -64,34 +64,34 @@ const SLOT_X=[215,405,595,785];
 /* ---------- dati ---------- */
 const BASES={
   panino :{n:'Panino', v:3,cook:5.0,lvl:1},
-  piadina:{n:'Piadina',v:4,cook:4.2,lvl:3},
-  toast  :{n:'Toast',  v:3,cook:3.6,lvl:3}
+  piadina:{n:'Piadina',v:4,cook:4.2,lvl:5},
+  toast  :{n:'Toast',  v:3,cook:3.6,lvl:4}
 };
 const INGS={
   panelle   :{n:'Panelle',   v:2,c:'#f2c94c',sauce:0,lvl:1},
-  crocchette:{n:'Crocchette',v:2,c:'#b9772a',sauce:0,lvl:1},
+  crocchette:{n:'Crocchette',v:2,c:'#b9772a',sauce:0,lvl:2},
   patatine  :{n:'Patatine',  v:2,c:'#ffd54f',sauce:0,lvl:1},
   ketchup   :{n:'Ketchup',   v:1,c:'#e53935',sauce:1,lvl:1},
-  maionese  :{n:'Maionese',  v:1,c:'#fff8e1',sauce:1,lvl:1},
-  barbecue  :{n:'Barbecue',  v:1,c:'#6d4c41',sauce:1,lvl:1},
-  prosciutto:{n:'Prosciutto',v:2,c:'#f48fb1',sauce:0,lvl:2},
-  salame    :{n:'Salame',    v:2,c:'#b71c1c',sauce:0,lvl:2},
-  formaggio :{n:'Formaggio', v:2,c:'#ffd54f',sauce:0,lvl:2},
-  mortadella:{n:'Mortadella',v:2,c:'#f8bbd0',sauce:0,lvl:3}
+  maionese  :{n:'Maionese',  v:1,c:'#fff8e1',sauce:1,lvl:2},
+  barbecue  :{n:'Barbecue',  v:1,c:'#6d4c41',sauce:1,lvl:3},
+  prosciutto:{n:'Prosciutto',v:2,c:'#f48fb1',sauce:0,lvl:3},
+  salame    :{n:'Salame',    v:2,c:'#b71c1c',sauce:0,lvl:5},
+  formaggio :{n:'Formaggio', v:2,c:'#ffd54f',sauce:0,lvl:4},
+  mortadella:{n:'Mortadella',v:2,c:'#f8bbd0',sauce:0,lvl:6}
 };
 const DRINKS={
   cola :{n:'Coca-Cola',v:3,lvl:3},
   acqua:{n:'Acqua',    v:2,lvl:3},
-  fanta:{n:'Fanta',    v:3,lvl:4},
-  birra:{n:'Birra',    v:4,lvl:4}
+  fanta:{n:'Fanta',    v:3,lvl:5},
+  birra:{n:'Birra',    v:4,lvl:6}
 };
 const COLD_OK=['prosciutto','salame','mortadella','formaggio','ketchup','maionese'];
 
 /* ---------- stazioni (posizioni fisse) ---------- */
 const STATIONS=[];
-['panelle','crocchette','patatine','prosciutto','salame'].forEach((id,i)=>STATIONS.push({kind:'ing',id,wx:-0.93,wz:ROWS[i],side:-1}));
-['ketchup','maionese','barbecue','formaggio','mortadella'].forEach((id,i)=>STATIONS.push({kind:'ing',id,wx:-0.72,wz:ROWS[i],side:-1}));
-['panino','piadina','toast'].forEach((id,i)=>STATIONS.push({kind:'base',id,wx:0.93,wz:ROWS[i],side:1}));
+['barbecue','prosciutto','formaggio','salame','mortadella'].forEach((id,i)=>STATIONS.push({kind:'ing',id,wx:-0.93,wz:ROWS[i],side:-1}));
+['patatine','panelle','ketchup','maionese','crocchette'].forEach((id,i)=>STATIONS.push({kind:'ing',id,wx:-0.72,wz:ROWS[i],side:-1}));
+['panino','toast','piadina'].forEach((id,i)=>STATIONS.push({kind:'base',id,wx:0.93,wz:ROWS[i],side:1}));
 ['cola','acqua','fanta','birra'].forEach((id,i)=>STATIONS.push({kind:'drink',id,wx:0.72,wz:ROWS[i],side:1}));
 STATIONS.push({kind:'bin',id:'bin',wx:0.93,wz:ROWS[4],side:1});
 STATIONS.sort((a,b)=>a.wz-b.wz||Math.abs(b.wx)-Math.abs(a.wx));
@@ -204,7 +204,7 @@ function icon(id,x,y,s){g.save();g.translate(x,y);g.scale(s/40,s/40);ICON[id]();
    STATO DI GIOCO
    ============================================================ */
 let state='menu',T=0,level=1,total=0,totalAtStart=0;
-let tut=null,tutCust=null,tutSeen=false;
+let tut=null,tutCust=null,tutSeen=false,unlock=null;
 let L=null,customers=[],slots=[null,null,null,null],grid=[],held={sandwich:null,drink:null},floats=[],hits=[],pausedFrom=null;
 const cap={wx:0,wz:0.6,face:1,walk:0,moving:false,target:null,pending:null,say:null,pop:0};
 let best=1;try{best=+localStorage.getItem('caponeSM_best')||1;}catch(e){}
@@ -213,15 +213,17 @@ const gridCount=()=>Math.min(3,1+L.n);
 
 function startLevel(n){
   level=n;totalAtStart=total;
-  L={n,total:5*n,spawned:0,served:0,lost:0,earned:0,tips:0,next:1.2,maxLost:n===1?3:Math.floor(0.4*5*n),over:0};
+  L={n,total:5*n,spawned:0,served:0,lost:0,earned:0,tips:0,next:1.2,maxLost:n===1?3:Math.floor(.5*5*n),over:0};
   customers=[];slots=[null,null,null,null];
   grid=[0,1,2].map(()=>({state:'empty',t:0,item:null}));
   held={sandwich:null,drink:null};floats=[];
   cap.wx=0;cap.wz=0.6;cap.target=null;cap.pending=null;cap.say=null;
-  tut=null;tutCust=null;
+  tut=null;tutCust=null;unlock=null;
+  if(n>1){const nw=[];for(const k in BASES)if(BASES[k].lvl===n)nw.push({id:k,n:BASES[k].n});for(const k in INGS)if(INGS[k].lvl===n)nw.push({id:k,n:INGS[k].n});for(const k in DRINKS)if(DRINKS[k].lvl===n)nw.push({id:k,n:DRINKS[k].n});if(nw.length)unlock={items:nw};}
   state='play';
   if(n===1&&!tutSeen){tut={on:true,phase:'intro'};tutCust=spawnCustomer({slot:1,pmax:60,order:{sand:{base:'panino',ings:['patatine']},drink:null}});}
 }
+function undoIng(){const s=held.sandwich;if(s&&s.state==='build'&&s.ings.length){const r=s.ings.pop();say('Tolto: '+INGS[r].n);cap.pop=.2;}}
 function say(s,t=2.2){cap.say={txt:s,t};}
 function floatT(x,y,s,col,size){floats.push({x,y,s,col:col||'#ffd54f',t:0,max:1.5,size:size||22});}
 
@@ -232,7 +234,8 @@ function genOrder(n){
   let pool=Object.keys(INGS).filter(i=>INGS[i].lvl<=n);
   if(base!=='panino')pool=pool.filter(i=>COLD_OK.includes(i));
   const maxIng=n<=1?2:n<=2?3:n<=4?3:4,minIng=n<=1?1:2;
-  const cnt=n<=1?(Math.random()<.65?1:2):Math.floor(rnd(minIng,maxIng+1));
+  const rr0=Math.random();
+  const cnt=n<=1?(rr0<.65?1:2):n<=2?(rr0<.5?1:2):n<=3?2:n<=6?(rr0<.65?2:3):(rr0<.4?2:rr0<.8?3:4);
   const solids=shuffle(pool.filter(i=>!INGS[i].sauce)),sauces=shuffle(pool.filter(i=>INGS[i].sauce));
   const ings=[solids[0]];
   while(ings.length<cnt){
@@ -244,9 +247,9 @@ function genOrder(n){
   }
   const dr=Object.keys(DRINKS).filter(d=>DRINKS[d].lvl<=n);
   let drink=null;
-  if(dr.length){const pr=n<=3?.4:n<=4?.55:.65;if(Math.random()<pr)drink=pick(dr);}
+  if(dr.length){const pr=n<=4?.3:n<=5?.45:.6;if(Math.random()<pr)drink=pick(dr);}
   let sand={base,ings};
-  if(drink&&n>=4&&Math.random()<.15)sand=null;
+  if(drink&&n>=6&&Math.random()<.12)sand=null;
   return{sand,drink};
 }
 const orderValue=o=>(o.sand?BASES[o.sand.base].v+o.sand.ings.reduce((a,i)=>a+INGS[i].v,0):0)+(o.drink?DRINKS[o.drink].v:0);
@@ -254,7 +257,7 @@ function spawnCustomer(f){
   const free=[0,1,2,3].filter(i=>!slots[i]);if(!free.length)return null;
   const si=f?f.slot:pick(free),order=f?f.order:genOrder(L.n);
   const items=(order.sand?order.sand.ings.length:0)+(order.drink?1:0);
-  const pmax=f?f.pmax:(L.n===1?70:clamp(52-2.5*(L.n-1),26,52))+4*items;
+  const pmax=f?f.pmax:Math.max(40,72-3*(L.n-1))+5*items;
   const fromLeft=Math.random()<.5;
   const c={slot:si,x:fromLeft?-80:W+80,tx:SLOT_X[si],order,got:{sand:false,drink:false},value:0,
     p:pmax,pmax,state:'enter',t:0,shake:0,happy:false,
@@ -352,12 +355,12 @@ function updateCap(dt){
   if(cap.say){cap.say.t-=dt;if(cap.say.t<=0)cap.say=null;}
   if(cap.pop>0)cap.pop-=dt;
 }
-function cookTime(base){return BASES[base].cook*(L.n===1?.8:1);}
-function readyWindow(){return Math.max(3,10-0.9*(L.n-1));}
+function cookTime(base){return BASES[base].cook*(L.n<=3?.8:1);}
+function readyWindow(){return Math.max(5,14-1.3*(L.n-1));}
 function update(dt){
   T+=dt;
   for(const f of floats)f.t+=dt;floats=floats.filter(f=>f.t<f.max);
-  if(state!=='play')return;
+  if(state!=='play'||unlock)return;
   updateCap(dt);
   const win=readyWindow();
   for(let i=0;i<gridCount();i++){
@@ -367,12 +370,12 @@ function update(dt){
     else if(gr.state==='burnt')gr.t+=dt;
   }
   // spawn
-  const maxAct=L.n===1?2:L.n===2?3:4;
+  const maxAct=L.n<=2?2:L.n<=4?3:4;
   if(L.spawned<L.total&&!(tut&&tut.on)){
     L.next-=dt;
     if(L.next<=0&&slots.some(s=>!s)&&customers.filter(c=>c.state!=='leave').length<maxAct){
       spawnCustomer();
-      const base=(L.n===1?14:Math.max(3.0,11-1.0*(L.n-1)))*(1-.35*L.spawned/L.total);
+      const base=Math.max(5,14-0.8*(L.n-1))*(1-.3*L.spawned/L.total);
       L.next=base*rnd(.8,1.2);
     }
   }
@@ -498,10 +501,10 @@ function drawGriddleItems(){
 function drawCrate(st){
   const lock=stLvl(st)>L.n;
   const s=sc(st.wz),x=PX(st.wx,st.wz),y=PY(st.wz);
-  const w=78*s,h=31*s,d=14*s;
+  const w=84*s,h=34*s,d=15*s;
   const wood=st.kind==='ing'?['#c62828','#8e1b1b']:st.kind==='base'?['#1e88e5','#0d47a1']:st.kind==='drink'?['#00838f','#005662']:['#546e7a','#263238'];
   g.save();
-  if(lock)g.globalAlpha=.4;
+  if(lock)g.globalAlpha=.3;
   // ombra
   g.fillStyle='rgba(0,0,0,.3)';g.beginPath();g.ellipse(x,y+2,w*.58,6*s,0,0,7);g.fill();
   if(st.kind==='bin'){
@@ -510,13 +513,13 @@ function drawCrate(st){
     g.strokeStyle='#78909c';g.lineWidth=1.5*s;for(const k of[-.15,0,.15]){g.beginPath();g.moveTo(x+w*k,y-h);g.lineTo(x+w*k*.85,y-3);g.stroke();}
     fitTxt('CESTINO',x,y-h*.35,w*.55,9*s+2,'#fff','#000');
     g.restore();
-    hits.push({x:x-w/2-6,y:y-h-d-6,w:w+12,h:h+d+14,fn:()=>goAct({type:'bin',id:'bin'})});return;
+    hits.push({sc:true,cx:x,cy:y-h*.8,x:x-w/2-8,y:y-h-d-8,w:w+16,h:h+d+16,fn:()=>goAct({type:'bin',id:'bin'})});return;
   }
   // interno cassetta
   g.fillStyle=wood[1];g.beginPath();g.moveTo(x-w/2,y-h);g.lineTo(x+w/2,y-h);g.lineTo(x+w/2-4*s,y-h-d);g.lineTo(x-w/2+4*s,y-h-d);g.closePath();g.fill();
   // icona
   const id=st.id;
-  icon(id,x,y-h-d*.2-6*s,46*s);
+  icon(id,x,y-h-d*.2-7*s,52*s);
   // fronte
   const gr=g.createLinearGradient(0,y-h,0,y);gr.addColorStop(0,wood[0]);gr.addColorStop(1,wood[1]);
   fillRR(x-w/2,y-h,w,h,3*s,gr,'rgba(0,0,0,.45)',1.5);
@@ -528,7 +531,7 @@ function drawCrate(st){
   if(!lock){
     const sel=(st.kind==='ing'&&held.sandwich&&held.sandwich.ings.includes(st.id));
     if(sel){g.strokeStyle='#00e676';g.lineWidth=3;rr(x-w/2-2,y-h-d-4,w+4,h+d+6,4);g.stroke();}
-    hits.push({x:x-w/2-6,y:y-h-d-26*s,w:w+12,h:h+d+32*s,fn:()=>goAct({type:st.kind,id:st.id})});
+    hits.push({sc:true,cx:x,cy:y-h*.9,x:x-w/2-8,y:y-h-d-34*s,w:w+16,h:h+d+34*s+8,fn:()=>goAct({type:st.kind,id:st.id})});
   }
 }
 function drawCapone(){
@@ -700,7 +703,7 @@ function drawFloats(){
 function hintText(){
   const s=held.sandwich;
   if(!s){if(grid.some((q,i)=>i<gridCount()&&q.state==='ready'))return'È VERDE! Tocca la piastra e ritira!';return'Leggi il fumetto · tocca la BASE a destra per iniziare';}
-  if(s.state==='build')return s.ings.length?'Aggiungi altro oppure tocca una PIASTRA libera':'Tocca gli INGREDIENTI a sinistra';
+  if(s.state==='build')return s.ings.length?'Altro ingrediente · TOGLI se sbagli · oppure PIASTRA':'Tocca gli INGREDIENTI a sinistra';
   return'Tocca il CLIENTE giusto per consegnare';
 }
 function drawHUD(){
@@ -711,6 +714,9 @@ function drawHUD(){
   txt('PERSI '+L.lost+'/'+(L.maxLost+1),790,22,16,L.lost>=L.maxLost?'#ff5252':'#ffab91',{al:'center'});
   fillRR(932,6,54,32,8,'#c62828','#ffd54f',2);g.fillStyle='#fff';g.fillRect(949,14,8,16);g.fillRect(962,14,8,16);
   hits.push({x:922,y:0,w:78,h:46,fn:()=>{state='pause';}});
+  { const s=held.sandwich;
+    if(!unlock&&s&&s.state==='build'&&s.ings.length){const pu=1+Math.sin(T*6)*.02;g.save();g.translate(890,72);g.scale(pu,pu);fillRR(-44,-20,88,40,12,'#fb8c00','#fff',2.5);txt('↶ TOGLI',0,1,15,'#fff',{st:'#7a3d00',lw:4});g.restore();hits.push({x:842,y:50,w:96,h:46,fn:undoIng});}
+  }
   // suggerimento
   if(tut&&tut.on)return;
   const h=hintText();g.font='13px '+FONT;const tw=Math.min(620,g.measureText(h).width+30);
@@ -806,7 +812,7 @@ function tutInfo(){
   if(gi>=0&&!s)return{n:4,t:'È VERDE! Ritira il panino dalla piastra',tg:{type:'griddle',i:gi}};
   if(ci>=0&&!s)return{n:3,t:'Sta cuocendo… aspetta il VERDE!',tg:{type:'griddle',i:ci}};
   if(s&&s.state==='build'){
-    if(s.ings.some(i=>i!=='patatine'))return{n:2,t:'Ingrediente sbagliato! Butta tutto nel CESTINO',tg:{type:'bin',id:'bin'}};
+    if(s.ings.some(i=>i!=='patatine'))return{n:2,t:'Ingrediente sbagliato! Tocca TOGLI',tg:{type:'undo'}};
     if(s.ings.includes('patatine')){const e=grid.findIndex((q,i)=>i<gridCount()&&q.state==='empty');return{n:3,t:'Metti il panino sulla PIASTRA',tg:{type:'griddle',i:Math.max(0,e)}};}
     return{n:2,t:'Aggiungi le PATATINE',tg:{type:'ing',id:'patatine'}};
   }
@@ -814,10 +820,23 @@ function tutInfo(){
   return{n:1,t:'Prendi il PANINO',tg:{type:'base',id:'panino'}};
 }
 function tutRect(tg){
+  if(tg.type==='undo')return{x:842,y:50,w:96,h:46};
   if(tg.type==='cust'){const c=tutCust;return{x:c.x-100,y:388,w:200,h:84};}
   if(tg.type==='griddle')return{x:GRID_X[tg.i]-72,y:96,w:144,h:96};
   const st=STATIONS.find(q=>q.kind===tg.type&&q.id===tg.id),s=sc(st.wz),x=PX(st.wx,st.wz),y=PY(st.wz);
   return{x:x-50*s,y:y-72*s,w:100*s,h:78*s};
+}
+function drawUnlock(){
+  if(!unlock)return;
+  g.fillStyle='rgba(8,4,20,.72)';g.fillRect(0,0,W,H);
+  fillRR(190,100,620,310,22,'#1a1035','#ffd54f',4);
+  txt('LIVELLO '+L.n,W/2,138,16,'#80d8ff',{});
+  txt('NOVITÀ!',W/2,182,42,'#ffd54f',{st:'#7f0000',lw:9});
+  txt('Da ora puoi servire anche:',W/2,226,16,'#fff',{});
+  const n=unlock.items.length,sp=Math.min(120,540/n);
+  unlock.items.forEach((it,i)=>{const x=W/2+(i-(n-1)/2)*sp;icon(it.id,x,284,58);fitTxt(it.n.toUpperCase(),x,330,sp-8,13,'#fff','#000');});
+  hits.push({x:0,y:0,w:W,h:H,fn:()=>{}});
+  btn('AVANTI',W/2,378,220,52,()=>{unlock=null;},'#e53935',24);
 }
 function modal(title,body,label,fn){
   g.fillStyle='rgba(8,4,20,.62)';g.fillRect(0,0,W,385);
@@ -880,7 +899,7 @@ function drawMenu(){
   lines.forEach((l,i)=>{g.font=(i<3?'bold 16px':'13px')+' Arial';g.fillStyle=i<3?'#fff':'#ffd54f';g.textAlign='center';g.textBaseline='middle';g.fillText(l,W/2,222+i*34);});
   btn('GIOCA',W/2,420,300,70,()=>askName(),'#e53935',38);
   btn('CLASSIFICA',W/2,496,260,52,()=>{refreshLB();state='lb';},'#1565c0',22);
-  txt('Versione 0.3 – audio e musica in arrivo',W/2,574,12,'#7e6ba8',{});
+  txt('Versione 0.4 – audio e musica in arrivo',W/2,574,12,'#7e6ba8',{});
 }
 function drawLevelEnd(){
   drawScene();hits=[];drawHUD();hits=[];
@@ -906,7 +925,7 @@ function frame(){
   g.setTransform(dpr*scale,0,0,dpr*scale,dpr*offX,dpr*offY);
   hits=[];
   if(state==='menu')drawMenu();
-  else if(state==='play'){drawScene();drawHUD();drawTut();}
+  else if(state==='play'){drawScene();drawHUD();drawTut();drawUnlock();}
   else if(state==='levelEnd')drawLevelEnd();
   else if(state==='gameover')drawGameOver();
   else if(state==='lb')drawLBScreen();
@@ -932,7 +951,16 @@ function tryLandscape(){          // Android: schermo intero + blocco orizzontal
 }
 cv.addEventListener('pointerup',tryLandscape);
 function clickAt(lx,ly){
-  for(let i=hits.length-1;i>=0;i--){const h=hits[i];if(lx>=h.x&&lx<=h.x+h.w&&ly>=h.y&&ly<=h.y+h.h){h.fn();return;}}
+  let best=null,bd=1e9;
+  for(let i=hits.length-1;i>=0;i--){
+    const h=hits[i];
+    if(lx>=h.x&&lx<=h.x+h.w&&ly>=h.y&&ly<=h.y+h.h){
+      if(h.sc){const d=Math.hypot(lx-h.cx,ly-h.cy);if(d<bd){bd=d;best=h;}continue;}   // cassette: vince la più vicina al dito
+      if(best)break;
+      h.fn();return;
+    }
+  }
+  if(best){best.fn();return;}
   if(state==='play'&&ly>=YB-10&&ly<=YF+8){
     const wz=clamp((ly-YB)/(YF-YB),WZ_MIN,WZ_MAX),wx=clamp((lx-CX)/hw(wz),-WX_MAX,WX_MAX);
     cap.target={wx,wz};cap.pending=null;cap.face=wx>cap.wx+.01?1:wx<cap.wx-.01?-1:cap.face;
@@ -943,7 +971,8 @@ cv.addEventListener('contextmenu',e=>e.preventDefault());
 const KM={ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down'};
 addEventListener('keydown',e=>{
   if(KM[e.code]){keys[KM[e.code]]=1;e.preventDefault();}
-  else if((e.code==='Space'||e.code==='Enter'||e.code==='KeyE')&&state==='play'&&!(tut&&tut.on&&tut.phase!=='guide')){e.preventDefault();interactNearest();}
+  else if(e.code==='Backspace'||e.code==='KeyZ'){undoIng();}
+  else if((e.code==='Space'||e.code==='Enter'||e.code==='KeyE')&&state==='play'&&!unlock&&!(tut&&tut.on&&tut.phase!=='guide')){e.preventDefault();interactNearest();}
   else if(e.code==='Escape'||e.code==='KeyP'){if(state==='play')state='pause';else if(state==='pause')state='play';}
 });
 addEventListener('keyup',e=>{if(KM[e.code])keys[KM[e.code]]=0;});
@@ -957,7 +986,7 @@ function interactNearest(){
   if(ba&&bestD<95)doAct(ba);else say('Avvicinati a qualcosa!');
 }
 // utilità per test / anteprima: ?level=3 parte direttamente
-window.__capone={setTotal:v=>{total=v;},gameOver,lbRows,get rotMode(){return rotMode;},get tut(){return tut;},tutInfo:()=>tutInfo(),startLevel,get state(){return state;},get L(){return L;},cap,get held(){return held;},get grid(){return grid;},get customers(){return customers;},doAct,goAct,clickAt,get hits(){return hits;},get total(){return total;},spawn:spawnCustomer,setState:s=>{state=s;}};
+window.__capone={get unlock(){return unlock;},STATIONS,undoIng,setTotal:v=>{total=v;},gameOver,lbRows,get rotMode(){return rotMode;},get tut(){return tut;},tutInfo:()=>tutInfo(),startLevel,get state(){return state;},get L(){return L;},cap,get held(){return held;},get grid(){return grid;},get customers(){return customers;},doAct,goAct,clickAt,get hits(){return hits;},get total(){return total;},spawn:spawnCustomer,setState:s=>{state=s;}};
 requestAnimationFrame(loop);
 })();
 </script>

@@ -1,0 +1,9 @@
+{
+  "name": "il-capone-salsa-e-maionese",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Il Capone – Salsa e Maionese: gioco del furgone dei panini con classifica Top 10",
+  "dependencies": {
+    "@upstash/redis": "^1.34.0"
+  }
+}

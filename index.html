@@ -217,7 +217,7 @@ const gridCount=()=>Math.min(3,1+L.n);
 
 function startLevel(n){
   level=n;totalAtStart=total;
-  L={n,total:5*n,spawned:0,served:0,lost:0,earned:0,tips:0,next:1.2,maxLost:n===1?3:Math.floor(.5*5*n),over:0};
+  L={n,total:5*n,spawned:0,served:0,lost:0,earned:0,tips:0,next:1.2,maxLost:4,over:0};
   customers=[];slots=[null,null,null,null];
   grid=[0,1,2].map(()=>({state:'empty',t:0,item:null}));
   held={sandwich:null,drink:null};floats=[];
@@ -954,7 +954,7 @@ function drawMenu(){
   lines.forEach((l,i)=>{g.font=(i<3?'bold 16px':'13px')+' Arial';g.fillStyle=i<3?'#fff':'#ffd54f';g.textAlign='center';g.textBaseline='middle';g.fillText(l,W/2,222+i*34);});
   btn('GIOCA',W/2,420,300,70,()=>askName(),'#e53935',38);
   btn('CLASSIFICA',W/2,496,260,52,()=>{refreshLB();state='lb';},'#1565c0',22);
-  txt('Versione 0.5',W/2,574,12,'#7e6ba8',{});
+  txt('Versione 0.5.1',W/2,574,12,'#7e6ba8',{});
   fillRR(930,10,54,38,10,'#37474f','#ffd54f',2);drawSpeaker(946,29,SND.mute);hits.push({x:924,y:4,w:66,h:50,fn:toggleMute});
 }
 function drawLevelEnd(){

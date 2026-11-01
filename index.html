@@ -22,7 +22,7 @@
   #nm button{font:inherit;font-size:24px;padding:10px 30px;border-radius:14px;border:3px solid #ffd54f;background:#e53935;color:#fff;box-shadow:0 5px 0 #7f0000;cursor:pointer}
   #nm .x{background:none;border:none;box-shadow:none;color:#b39ddb;font-size:14px;padding:4px}
   #links{position:absolute;inset:0;display:none;z-index:5;pointer-events:none}
-  #links a{position:absolute;pointer-events:auto;box-sizing:border-box;text-decoration:none;-webkit-tap-highlight-color:transparent}
+  #links>a{position:absolute;pointer-events:auto;box-sizing:border-box;text-decoration:none;-webkit-tap-highlight-color:transparent}
   .lk{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border:2px solid #ffcc33;border-radius:14px;padding:6px 12px;color:#fff;transition:transform .06s,box-shadow .06s}
   .lk b{font-family:'Bungee','Arial Black',Impact,sans-serif;font-weight:400;color:#ffe066;line-height:1.15;text-shadow:0 2px 0 rgba(0,0,0,.35)}
   .lk span{display:block;font-family:Arial,Helvetica,sans-serif;font-weight:700;line-height:1.2;margin-top:3px;color:#fff}
@@ -31,7 +31,11 @@
   .lk:active{transform:translateY(4px)}
   .lk.red:active{box-shadow:0 1px 0 #6d0f0f}
   .lk.blue:active{box-shadow:0 1px 0 #082a63}
-  #lk3d{display:flex;align-items:center;justify-content:center;color:#9fd3ff;font:700 12px Arial,Helvetica,sans-serif;text-decoration:underline!important}
+  #cbox{position:absolute;box-sizing:border-box;pointer-events:auto;background:rgba(10,6,28,.93);border:2px solid #b8932f;border-radius:14px;padding:3px 12px;text-align:center;color:#fff;font:600 12px/1.3 Arial,Helvetica,sans-serif}
+  #cbox a{color:#ffd54f;text-decoration:underline;font-weight:700;padding:5px 1px;-webkit-tap-highlight-color:transparent}
+  #cfoot{position:absolute;pointer-events:none;text-align:center;color:rgba(235,235,245,.85);font:400 11px/1.2 Arial,Helvetica,sans-serif}
+  #cfoot b{color:#fff;font-weight:700}
+  #cfoot i{font-style:normal;opacity:.65;font-size:.92em}
 </style>
 </head>
 <body>
@@ -40,7 +44,8 @@
 <div id="links">
 <a class="lk red" id="lkSC" href="https://supercapone.vercel.app" target="_blank" rel="noopener"><b>🎤 GIOCA ANCHE A SUPER CAPONE™</b><span>Il platform arcade del Capone tra i templi di Agrigento: salta, lancia microfoni e sconfiggi i boss!</span></a>
 <a class="lk blue" id="lkFA" href="https://formulaanziani.vercel.app" target="_blank" rel="noopener"><b>🏎️ GIOCA ANCHE A FORMULA ANZIANI™</b><span>La corsa in sedia a rotelle per le strade di Agrigento: schiva il traffico e batti i rivali!</span></a>
-<a id="lk3d" href="https://formulaanziani.vercel.app/3d.html" target="_blank" rel="noopener">Provalo anche in 3D</a>
+<div id="cbox">Vuoi il tuo gioco arcade personalizzato o vuoi scoprire altri giochi? Visita <a href="https://ilcaponequiz.win" target="_blank" rel="noopener">ilcaponequiz.win</a> o contatta <a href="https://albertoseminerio.com" target="_blank" rel="noopener">Alberto Seminerio</a></div>
+<div id="cfoot">Gioco creato da <b>Alberto Seminerio</b> · di proprietà di <b>Il Capone Quiz™</b> · <i>v0.7</i></div>
 </div></div>
 <script>
 /* AUDIO (musica + voci di Alberto, incorporati nel file) */
@@ -968,9 +973,8 @@ function drawMenu(){
   lines.slice(0,3).forEach((l,i)=>{g.font='bold 15px Arial';g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.fillText(l,W/2,162+i*24);});
   g.font='12px Arial';g.fillStyle='#ffd54f';g.textAlign='center';g.textBaseline='middle';g.fillText(lines[3],W/2,234);
   btn('GIOCA',W/2,282,300,58,()=>askName(),'#e53935',34);
-  // (fascia y 322-440: i due link agli altri giochi sono elementi HTML, vedi syncLinks)
-  btn('CLASSIFICA',W/2,515,260,46,()=>{refreshLB();state='lb';},'#1565c0',21);
-  txt('Versione 0.6',W/2,574,12,'#7e6ba8',{});
+  // (y 322-440: i due link agli altri giochi; y 510-596: invito + crediti. Sono elementi HTML, vedi syncLinks)
+  btn('CLASSIFICA',W/2,480,260,44,()=>{refreshLB();state='lb';},'#1565c0',21);
   fillRR(930,10,54,38,10,'#37474f','#ffd54f',2);drawSpeaker(946,29,SND.mute);hits.push({x:924,y:4,w:66,h:50,fn:toggleMute});
 }
 function drawLevelEnd(){
@@ -993,7 +997,8 @@ function drawPause(){
 /* ============================================================
    LOOP / INPUT
    ============================================================ */
-const lkBox=document.getElementById('links'),lkSC=document.getElementById('lkSC'),lkFA=document.getElementById('lkFA'),lk3d=document.getElementById('lk3d');
+const lkBox=document.getElementById('links'),lkSC=document.getElementById('lkSC'),lkFA=document.getElementById('lkFA');
+const cbox=document.getElementById('cbox'),cfoot=document.getElementById('cfoot');
 let lkKey='';
 function syncLinks(){            // i link compaiono SOLO nella schermata iniziale (non con il nome da inserire, non in partita, non al game over)
   const vis=state==='menu'&&nm.style.display!=='flex';
@@ -1001,10 +1006,11 @@ function syncLinks(){            // i link compaiono SOLO nella schermata inizia
   if(key===lkKey)return;lkKey=key;
   lkBox.style.display=vis?'block':'none';if(!vis)return;
   const put=(el,x,y,w,h)=>{el.style.left=(offX+x*scale)+'px';el.style.top=(offY+y*scale)+'px';el.style.width=(w*scale)+'px';el.style.minHeight=Math.max(44,h*scale)+'px';};
-  put(lkSC,50,322,440,118);put(lkFA,510,322,440,118);put(lk3d,510,444,440,30);lk3d.style.minHeight=Math.max(28,30*scale)+'px';
+  put(lkSC,50,322,440,118);put(lkFA,510,322,440,118);
+  cbox.style.left=(offX+90*scale)+'px';cbox.style.top=(offY+510*scale)+'px';cbox.style.width=(820*scale)+'px';cbox.style.fontSize=Math.max(10,12.5*scale)+'px';
+  cfoot.style.left=(offX+50*scale)+'px';cfoot.style.top=(offY+577*scale)+'px';cfoot.style.width=(900*scale)+'px';cfoot.style.fontSize=Math.max(9.5,11.5*scale)+'px';
   const ft=Math.max(9.8,15.5*scale),fs=Math.max(10,12.5*scale);
   for(const a of[lkSC,lkFA]){a.firstElementChild.style.fontSize=ft+'px';a.lastElementChild.style.fontSize=fs+'px';}
-  lk3d.style.fontSize=Math.max(10.5,12.5*scale)+'px';
 }
 function frame(){
   sndTick();syncLinks();

@@ -42,10 +42,9 @@
 <div id="stage"><canvas id="c"></canvas>
 <div id="nm"><div class="t">COME TI CHIAMI?</div><input id="nmI" maxlength="12" placeholder="IL TUO NOME" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="nmB">GIOCA!</button><button class="x" id="nmX">indietro</button></div>
 <div id="links">
-<a class="lk red" id="lkSC" href="https://supercapone.vercel.app" target="_blank" rel="noopener"><b>🎤 GIOCA ANCHE A SUPER CAPONE™</b><span>Il platform arcade del Capone tra i templi di Agrigento: salta, lancia microfoni e sconfiggi i boss!</span></a>
-<a class="lk blue" id="lkFA" href="https://formulaanziani.vercel.app" target="_blank" rel="noopener"><b>🏎️ GIOCA ANCHE A FORMULA ANZIANI™</b><span>La corsa in sedia a rotelle per le strade di Agrigento: schiva il traffico e batti i rivali!</span></a>
+<a class="lk red" id="lkSC" href="/giochi.html"><b>PROVA ANCHE GLI ALTRI GIOCHI DEL CAPONE</b><span>La sala giochi di Alberto Seminerio: tutti i giochi gratis</span></a>
 <div id="cbox">Vuoi il tuo gioco arcade personalizzato o vuoi scoprire altri giochi? Visita <a href="https://ilcaponequiz.win" target="_blank" rel="noopener">ilcaponequiz.win</a> o contatta <a href="https://albertoseminerio.com" target="_blank" rel="noopener">Alberto Seminerio</a></div>
-<div id="cfoot">Gioco creato da <b>Alberto Seminerio</b> · di proprietà di <b>Il Capone Quiz™</b> · <i>v0.7</i></div>
+<div id="cfoot">Gioco creato da <b>Alberto Seminerio</b> · di proprietà di <b>Il Capone Quiz™</b> · <i>v0.8</i></div>
 </div></div>
 <script>
 /* AUDIO (musica + voci di Alberto, incorporati nel file) */
@@ -997,7 +996,7 @@ function drawPause(){
 /* ============================================================
    LOOP / INPUT
    ============================================================ */
-const lkBox=document.getElementById('links'),lkSC=document.getElementById('lkSC'),lkFA=document.getElementById('lkFA');
+const lkBox=document.getElementById('links'),lkSC=document.getElementById('lkSC');
 const cbox=document.getElementById('cbox'),cfoot=document.getElementById('cfoot');
 let lkKey='';
 function syncLinks(){            // i link compaiono SOLO nella schermata iniziale (non con il nome da inserire, non in partita, non al game over)
@@ -1006,11 +1005,11 @@ function syncLinks(){            // i link compaiono SOLO nella schermata inizia
   if(key===lkKey)return;lkKey=key;
   lkBox.style.display=vis?'block':'none';if(!vis)return;
   const put=(el,x,y,w,h)=>{el.style.left=(offX+x*scale)+'px';el.style.top=(offY+y*scale)+'px';el.style.width=(w*scale)+'px';el.style.minHeight=Math.max(44,h*scale)+'px';};
-  put(lkSC,50,322,440,118);put(lkFA,510,322,440,118);
+  put(lkSC,240,340,520,76);
   cbox.style.left=(offX+90*scale)+'px';cbox.style.top=(offY+510*scale)+'px';cbox.style.width=(820*scale)+'px';cbox.style.fontSize=Math.max(10,12.5*scale)+'px';
   cfoot.style.left=(offX+50*scale)+'px';cfoot.style.top=(offY+577*scale)+'px';cfoot.style.width=(900*scale)+'px';cfoot.style.fontSize=Math.max(9.5,11.5*scale)+'px';
   const ft=Math.max(9.8,15.5*scale),fs=Math.max(10,12.5*scale);
-  for(const a of[lkSC,lkFA]){a.firstElementChild.style.fontSize=ft+'px';a.lastElementChild.style.fontSize=fs+'px';}
+  for(const a of[lkSC]){a.firstElementChild.style.fontSize=ft+'px';a.lastElementChild.style.fontSize=fs+'px';}
 }
 function frame(){
   sndTick();syncLinks();

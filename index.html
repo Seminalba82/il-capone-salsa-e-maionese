@@ -42,7 +42,7 @@
 <div id="stage"><canvas id="c"></canvas>
 <div id="nm"><div class="t">COME TI CHIAMI?</div><input id="nmI" maxlength="12" placeholder="IL TUO NOME" autocomplete="off" autocapitalize="characters" spellcheck="false"><button id="nmB">GIOCA!</button><button class="x" id="nmX">indietro</button></div>
 <div id="links">
-<a class="lk red" id="lkSC" href="https://giochi.ilcaponequiz.win/" target="_blank" rel="noopener"><b>PROVA ANCHE GLI ALTRI GIOCHI DEL CAPONE</b><span>La sala giochi di Alberto Seminerio: tutti i giochi gratis</span></a>
+<a class="lk red" id="lkSC" href="/giochi.html"><b>PROVA ANCHE GLI ALTRI GIOCHI DEL CAPONE</b><span>La sala giochi di Alberto Seminerio: tutti i giochi gratis</span></a>
 <div id="cbox">Vuoi il tuo gioco arcade personalizzato o vuoi scoprire altri giochi? Visita <a href="https://ilcaponequiz.win" target="_blank" rel="noopener">ilcaponequiz.win</a> o contatta <a href="https://albertoseminerio.com" target="_blank" rel="noopener">Alberto Seminerio</a></div>
 <div id="cfoot">Gioco creato da <b>Alberto Seminerio</b> · di proprietà di <b>Il Capone Quiz™</b> · <i>v0.9</i></div>
 </div></div>
@@ -813,15 +813,34 @@ function drawSpeaker(x,y,m){
 const LB_KEY='caponeSM_lb',LB_URL=(location.protocol==='http:'||location.protocol==='https:')?'/api/leaderboard':'';
 let lb=[],remoteLb=null,lastEntry=null,playerName='';
 try{lb=JSON.parse(localStorage.getItem(LB_KEY)||'[]');playerName=localStorage.getItem('caponeSM_name')||'';}catch(e){}
-function lbRows(){return((remoteLb&&remoteLb.length)?remoteLb:lb).slice(0,10);}
+const MESI=['GENNAIO','FEBBRAIO','MARZO','APRILE','MAGGIO','GIUGNO','LUGLIO','AGOSTO','SETTEMBRE','OTTOBRE','NOVEMBRE','DICEMBRE'];
+function romeMonth(ts){            // mese corrente (AAAA-MM) secondo l'ora italiana
+  const d=ts?new Date(ts):new Date();
+  try{const p=new Intl.DateTimeFormat('en-GB',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit'}).formatToParts(d);return p.find(x=>x.type==='year').value+'-'+p.find(x=>x.type==='month').value;}
+  catch(e){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+}
+let remoteMonth=null;
+lb.forEach(e=>{if(!e.m)e.m=romeMonth(e.ts);});
+function lbMonth(){return(remoteLb!==null&&remoteMonth)?remoteMonth:romeMonth();}
+function lbName(){return MESI[+lbMonth().slice(5,7)-1]||'';}
+function lbRows(){return(remoteLb!==null?remoteLb:lb.filter(e=>e.m===romeMonth())).slice(0,10);}
+function lbTrim(){                 // sul dispositivo si tengono solo gli ultimi 3 mesi (max 30 punteggi per mese)
+  const by={};lb.forEach(e=>{(by[e.m]=by[e.m]||[]).push(e);});
+  lb=[];Object.keys(by).sort().slice(-3).forEach(k=>{by[k].sort((a,b)=>b.score-a.score||a.ts-b.ts);lb.push(...by[k].slice(0,30));});
+}
+function lbFetch(opt){
+  fetch(LB_URL,opt).then(r=>r.ok?r.json().then(d=>({d,m:r.headers.get('X-Lb-Month')})):null)
+    .then(x=>{if(x&&Array.isArray(x.d)){remoteLb=x.d;remoteMonth=x.m||null;}else{remoteLb=null;remoteMonth=null;}})
+    .catch(()=>{remoteLb=null;remoteMonth=null;});
+}
 function lbSubmit(name,score,lvl){
-  const e={name,score,level:lvl,ts:Date.now()};
-  lb.push(e);lb.sort((a,b)=>b.score-a.score||a.ts-b.ts);lb=lb.slice(0,50);
+  const e={name,score,level:lvl,ts:Date.now(),m:romeMonth()};
+  lb.push(e);lbTrim();
   try{localStorage.setItem(LB_KEY,JSON.stringify(lb));}catch(x){}
-  if(LB_URL)fetch(LB_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,score,level:lvl})}).then(r=>r.ok?r.json():null).then(d=>{if(Array.isArray(d))remoteLb=d;}).catch(()=>{});
+  if(LB_URL)lbFetch({method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,score,level:lvl})});
   return e;
 }
-function refreshLB(){if(LB_URL)fetch(LB_URL,{cache:'no-store'}).then(r=>r.ok?r.json():null).then(d=>{if(Array.isArray(d))remoteLb=d;}).catch(()=>{});}
+function refreshLB(){if(LB_URL)lbFetch({cache:'no-store'});}
 refreshLB();
 function startGame(){sndInit();total=0;startLevel(1);}
 function gameOver(){state='gameover';sfx('over',true);lastEntry=total>0?lbSubmit(playerName||'CAPONE',total,L.n):null;}
@@ -852,8 +871,9 @@ function drawLBScreen(){
   drawScene();hits=[];
   g.fillStyle='rgba(8,4,20,.82)';g.fillRect(0,0,W,H);
   fillRR(190,24,620,552,22,'#1a1035','#ffd54f',4);
-  txt('TOP 10',W/2,72,44,'#ffd54f',{st:'#b71c1c',lw:10});
+  fitTxt('TOP 10 DI '+lbName(),W/2,70,560,42,'#ffd54f','#b71c1c');
   drawLB(225,108,550);
+  txt('La classifica si azzera il 1° di ogni mese',W/2,492,13,'#b39ddb',{});
   btn('INDIETRO',W/2,534,260,50,()=>{state='menu';},'#1565c0',22);
 }
 function drawGameOver(){
@@ -873,7 +893,7 @@ function drawGameOver(){
   txt(playerName||'CAPONE',270,392,15,'#b39ddb',{});
   btn('GIOCA ANCORA',270,452,330,60,()=>{startGame();},'#e53935',24);
   btn('MENU',270,520,200,44,()=>{state='menu';},'#1565c0',20);
-  txt('CLASSIFICA',700,70,22,'#ffd54f',{});
+  fitTxt('CLASSIFICA DI '+lbName(),700,70,420,22,'#ffd54f',null);
   drawLB(480,92,440);
 }
 /* ============================================================

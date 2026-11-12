@@ -1,5 +1,19 @@
 # Il Capone – Salsa e Maionese · Storico versioni
 
+## v0.9 (02/11/2026)
+- Il pulsante "Prova anche gli altri giochi del Capone" apre la sala giochi indipendente https://salagiochi.ilcaponequiz.win/ in una nuova scheda; giochi.html non serve più
+
+## v0.8.1 (02/11/2026)
+- Aggiunto il simbolo ™ al titolo nel menu iniziale ("SALSA E MAIONESE™") e nel titolo della pagina
+
+## v0.8 (02/11/2026)
+- I pulsanti per Super Capone e Formula Anziani sono sostituiti da un solo pulsante "Prova anche gli altri giochi del Capone" che apre la nuova pagina giochi.html (la sala giochi di Alberto Seminerio con tutti i giochi)
+- Aggiunto giochi.html nella radice del sito
+
+## v0.7 (01/11/2026)
+- Tolto il link "Provalo anche in 3D" (la scelta 2D/3D si fa dalla home di Formula Anziani)
+- Aggiunte in fondo alla schermata iniziale le due righe: invito al gioco personalizzato (con link a ilcaponequiz.win e albertoseminerio.com) e crediti "Gioco creato da Alberto Seminerio · di proprietà di Il Capone Quiz™"
+
 ## v0.6 (31/10/2026)
 - Pulsanti per giocare anche a Super Capone e Formula Anziani (solo nella schermata iniziale, si aprono in una nuova scheda)
 - Link facoltativo "Provalo anche in 3D" per Formula Anziani

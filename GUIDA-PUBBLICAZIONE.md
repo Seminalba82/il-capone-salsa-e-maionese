@@ -1,4 +1,4 @@
-# Il Capone – Salsa e Maionese (v0.3)
+# Il Capone – Salsa e Maionese (v0.7)
 ## Guida: pubblicare su GitHub + Vercel, con classifica Top 10 online
 
 Contenuto dello zip:

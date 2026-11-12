@@ -1,5 +1,5 @@
-# Il Capone – Salsa e Maionese (v0.7)
-## Guida: pubblicare su GitHub + Vercel, con classifica Top 10 online
+# Il Capone – Salsa e Maionese (v1.0)
+## Guida: pubblicare su GitHub + Vercel, con classifica Top 10 MENSILE online
 
 Contenuto dello zip:
 
@@ -36,7 +36,7 @@ Costo: tutto gratuito con i piani gratuiti di GitHub, Vercel e Upstash (più che
 1. Vai su **vercel.com** → **Sign Up** → **Continue with GitHub** (stesso account di prima).
 2. **Add New… → Project**. Trova `il-capone-salsa-e-maionese` e clicca **Import**.
 3. Lascia tutto com'è (Framework Preset: *Other*, nessun comando di build) e clicca **Deploy**.
-4. Dopo circa un minuto ottieni un indirizzo tipo `https://il-capone-salsa-e-maionese.vercel.app`.
+4. Dopo circa un minuto ottieni un indirizzo tipo `https://salsaemaionese.ilcaponequiz.win`.
 
 A questo punto il gioco è online e funziona già, ma la classifica resta **solo sul singolo telefono** finché non fai la parte 3.
 
@@ -55,7 +55,7 @@ Vercel non ha un database interno: si collega **Upstash Redis** dal Marketplace 
    scheda **Deployments** → i tre puntini sull'ultimo deploy → **Redeploy**.
 
 ### Prova che funzioni
-- Apri `https://TUO-SITO.vercel.app/api/leaderboard`: deve comparire `[]` (classifica vuota). Se vedi `{"error":"errore server"}` le variabili non sono collegate: ripeti i punti 4–5.
+- Apri `https://TUO-SITO.vercel.app/api/leaderboard`: deve comparire `[]` (classifica del mese ancora vuota). Se vedi `{"error":"errore server"}` le variabili non sono collegate: ripeti i punti 4–5.
 - Gioca una partita fino al Game Over: il punteggio compare in classifica. Aprendo il gioco da un altro telefono vedi gli stessi nomi.
 
 ---
@@ -63,9 +63,16 @@ Vercel non ha un database interno: si collega **Upstash Redis** dal Marketplace 
 ## Aggiornare il gioco in futuro
 Su GitHub apri `index.html` → icona matita → incolla la nuova versione → **Commit changes**. Vercel ripubblica da solo in circa un minuto. La classifica non si cancella.
 
-## Gestire la classifica
-- **Azzerarla (es. classifica mensile o dopo un evento):** su Vercel → Storage → il tuo database → **Open in Upstash** → *Data Browser* → cerca la chiave `capone:lb` → **Delete**.
-- **Togliere un nome sgradito:** nello stesso Data Browser apri `capone:lb` ed elimina quella voce.
+> **Se cambi anche `api/leaderboard.js`** (come nella v0.9): su GitHub apri `api/leaderboard.js` → icona matita → seleziona tutto e incolla il nuovo codice → **Commit changes**. Carica **prima** il file dell'API e **poi** `index.html`.
+
+## Classifica mensile (novembre, dicembre, ...)
+- Ogni mese ha la sua classifica: nel gioco compare **"TOP 10 DI NOVEMBRE"**, poi **"TOP 10 DI DICEMBRE"** e così via.
+- **Il 1° del mese (ora italiana) si riparte da zero da soli:** non devi fare niente. La classifica del mese passato resta salvata e non si perde.
+- Per vedere un mese passato apri nel browser `https://TUO-SITO.vercel.app/api/leaderboard?month=2026-11` (anno-mese).
+- **Togliere un nome sgradito:** su Vercel → Storage → il tuo database → **Open in Upstash** → *Data Browser* → apri la chiave del mese, per esempio `capone:lb:2026-11`, ed elimina la voce.
+- **Azzerare a mano un mese:** nello stesso Data Browser elimina la chiave `capone:lb:AAAA-MM` di quel mese.
+- La vecchia chiave `capone:lb` (classifica unica delle versioni precedenti) non viene più usata: puoi eliminarla.
+- Sul telefono di chi gioca si tengono anche i punteggi degli ultimi 3 mesi, ma si vede solo quello del mese corrente.
 
 ## Dominio tuo (facoltativo)
 Vercel → progetto → **Settings → Domains** → aggiungi il dominio e segui le istruzioni DNS.

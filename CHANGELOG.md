@@ -1,7 +1,24 @@
 # Il Capone – Salsa e Maionese · Storico versioni
 
-## v0.9 (02/11/2026)
-- Il pulsante "Prova anche gli altri giochi del Capone" apre la sala giochi indipendente https://salagiochi.ilcaponequiz.win/ in una nuova scheda; giochi.html non serve più
+## v1.0 (11/11/2026) – Nuova grafica
+- Scena ridisegnata: furgone di notte ad Agrigento (luna, palma, tempio illuminato), tendone, lucine, parete a piastrelle con fascia in maiolica, pavimento a scacchi con luci e ombre, bancone in legno, piastre in ghisa con fiamme vere, vapore e fumo
+- La scena riempie tutto lo schermo del telefono (niente più bande nere ai lati)
+- Cibo, bibite e panini ridisegnati con sfumature e riflessi; cassette più ordinate, con il nome sempre leggibile e il lucchetto su quelle ancora bloccate
+- Capone ridisegnato (testa-microfono a griglia, due occhi, baffi, giacca, grembiule); clienti con più pettinature, cappelli e vestiti
+- Interfaccia nuova: barra in alto con moneta, barra dei clienti serviti e cuoricini per i clienti che si possono ancora perdere; pulsanti e finestre lucidi; schermata iniziale con Capone, salse e panino
+- Effetti: monete, cuori, scintille quando è pronto, coriandoli a fine livello
+- Giocabilità: si possono toccare più cose di fila (fino a 4 mosse in coda, con i numeri); nel fumetto compare la spunta sugli ingredienti già messi e il fumetto giusto si illumina quando hai in mano il suo ordine; bonus SERIE per i clienti serviti di fila senza perderne; Capone un po' più veloce
+- Classifica mensile, audio, tutorial, livelli e tempi invariati
+
+## v0.9.1 (02/11/2026)
+- Il pulsante "Prova anche gli altri giochi del Capone" ora porta a https://salagiochi.ilcaponequiz.win/ (si apre in una nuova scheda)
+- Tolto giochi.html da questo sito: la sala giochi vive solo all'indirizzo giochi.ilcaponequiz.win
+
+## v0.9 (02/11/2026) – Classifica mensile
+- La classifica è mensile: "TOP 10 DI NOVEMBRE", poi "TOP 10 DI DICEMBRE" e così via. Il 1° del mese (ora italiana) riparte da zero da sola; i mesi passati restano salvati
+- Titolo del mese anche nella schermata di fine partita; scritta "La classifica si azzera il 1° di ogni mese"
+- Server (`api/leaderboard.js`): una chiave per mese (`capone:lb:AAAA-MM`), possibilità di vedere un mese passato con `?month=AAAA-MM`
+- Nessun cambiamento a gioco, tutorial, audio, pulsanti e schermata iniziale
 
 ## v0.8.1 (02/11/2026)
 - Aggiunto il simbolo ™ al titolo nel menu iniziale ("SALSA E MAIONESE™") e nel titolo della pagina

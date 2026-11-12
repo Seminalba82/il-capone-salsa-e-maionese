@@ -1,5 +1,10 @@
 # Il Capone – Salsa e Maionese · Storico versioni
 
+## v1.1 (12/11/2026) – Il pupazzo ufficiale
+- Il Capone protagonista ora è il pupazzo ufficiale (testa-microfono con cappello e baffi) al posto del vecchio personaggio, in partita e nella schermata iniziale
+- Fumetto del Capone spostato un po' più in alto per il nuovo cappello
+- Collegamenti aggiornati ai nuovi indirizzi (sala giochi: salagiochi.ilcaponequiz.win)
+
 ## v1.0 (11/11/2026) – Nuova grafica
 - Scena ridisegnata: furgone di notte ad Agrigento (luna, palma, tempio illuminato), tendone, lucine, parete a piastrelle con fascia in maiolica, pavimento a scacchi con luci e ombre, bancone in legno, piastre in ghisa con fiamme vere, vapore e fumo
 - La scena riempie tutto lo schermo del telefono (niente più bande nere ai lati)

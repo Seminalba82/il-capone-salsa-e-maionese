@@ -1,5 +1,8 @@
 # Il Capone – Salsa e Maionese · Storico versioni
 
+## v1.2 (20/11/2026) – Statistiche
+- Conteggio anonimo di visite e partite (solo numeri, nessun dato personale) per le statistiche comuni della sala giochi
+
 ## v1.1 (12/11/2026) – Il pupazzo ufficiale
 - Il Capone protagonista ora è il pupazzo ufficiale (testa-microfono con cappello e baffi) al posto del vecchio personaggio, in partita e nella schermata iniziale
 - Fumetto del Capone spostato un po' più in alto per il nuovo cappello
